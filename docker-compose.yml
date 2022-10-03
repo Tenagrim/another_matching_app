@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+  postgres:
+    image: postgres:12.1
+    environment:
+      POSTGRES_USER: matcha_admin
+      POSTGRES_PASSWORD: test_db_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - matcha-postgres:/var/lib/postgresql/data
+  debug_client:
+    image: nginx:1.13.3-alpine
+    ports:
+      - '80:80'
+    volumes:
+      - ./client/config/nginx.conf:/etc/nginx/conf.default/default.conf
+      - ./client/build:/usr/share/nginx/html
+  debug_node:
+    image: node:9.5
+    command: sleep 9999999
+    volumes:
+      - ./client:/client
+
+
+volumes:
+  matcha-postgres:
+  matcha-uploads:
