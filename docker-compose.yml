@@ -9,18 +9,17 @@ services:
       - '5432:5432'
     volumes:
       - matcha-postgres:/var/lib/postgresql/data
-  debug_client:
-    image: nginx:1.13.3-alpine
-    ports:
-      - '80:80'
-    volumes:
-      - ./client/config/nginx.conf:/etc/nginx/conf.default/default.conf
-      - ./client/build:/usr/share/nginx/html
   debug_node:
-    image: node:9.5
-    command: sleep 9999999
+    image: node:latest
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    working_dir: /project/app
+    command: yarn start
+    ports:
+      - '3001:3000'
     volumes:
-      - ./client:/client
+      - .:/project
 
 
 volumes:
