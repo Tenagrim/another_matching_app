@@ -5,7 +5,7 @@ const TextField = (props) => {
         <div className="mt-4">
             <label
                 htmlFor={props.htmlFor}
-                className="block text-sm font-medium text-gray-100 undefined"
+                className="block text-sm font-medium text-gray-200 undefined"
             >
                 {props.label}
             </label>
@@ -13,7 +13,7 @@ const TextField = (props) => {
                 <input
                     type={props.type}
                     name={props.name}
-                    className="block w-full mt-1 border-2 border-gray-300 rounded-md bg-transparent shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                    className="block w-full mt-1 border border-gray-200 rounded-md bg-transparent shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 />
             </div>
         </div>

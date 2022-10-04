@@ -5,18 +5,13 @@ import {
 } from "react-router-dom";
 import BasePanel from "./ui/panel/BasePanel";
 import TextField from "./ui/input/TextField";
+import Logo from "./icons/Logo";
 
 export default function SignInForm() {
     return (
         <div>
             <div className="flex flex-col items-center min-h-screen pt-6 sm:justify-center sm:pt-0 ">
-                <div>
-                    <Link to="/">
-                        <h3 className={"text-4xl font-bold text-purple-500"}>
-                            Matcha
-                        </h3>
-                    </Link>
-                </div>
+                <Logo/>
                 <BasePanel>
                     <form>
                         <TextField label="Email" name="email" type="email"/>
@@ -24,8 +19,7 @@ export default function SignInForm() {
                         <div className="flex items-center justify-end mt-4">
                             <Link
                                 to="/signup"
-                                className="text-sm text-gray-600 underline hover:text-gray-900"
-                                href="#"
+                                className="text-sm text-gray-200 underline hover:text-gray-900"
                             >
                                 Create an account
                             </Link>
