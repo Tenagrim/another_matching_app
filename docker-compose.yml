@@ -3,11 +3,13 @@ services:
   postgres:
     image: postgres:12.1
     environment:
-      POSTGRES_USER: matcha_admin
-      POSTGRES_PASSWORD: test_db_password
+      POSTGRES_DB: matcha_db
+      POSTGRES_USER: matcha_user
+      POSTGRES_PASSWORD: matcha_password
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
+      - ./server/src/main/resources/sql:/docker-entrypoint-initdb.d
       - matcha-postgres:/var/lib/postgresql/data
   debug_node:
     image: node:latest
