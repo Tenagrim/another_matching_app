@@ -12,9 +12,9 @@ import lombok.Data;
 public class User extends Entity {
     @Id
     @Column(name = "user_id")
-    Long id;
+    Integer id;
     @Column(name = "user_auth_id")
-    Long userAuthId;
+    Integer userAuthId;
     @Column(name = "first_name")
     String firstName;
     @Column(name = "last_name")

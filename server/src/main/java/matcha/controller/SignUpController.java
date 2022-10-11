@@ -1,45 +1,48 @@
 package matcha.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.annotations.*;
 import matcha.dto.AuthResponse;
 import matcha.dto.SignUpRequest;
-import matcha.dto.entity.User;
+import matcha.exceptions.AppException;
 import matcha.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
 import spark.Request;
 import spark.Response;
+import spark.Route;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 
 
-@Component
-@Tag(name = "auth", description = "sign up")
-public class SignUpController extends BaseController{
+
+@Api
+@Path("/signup")
+@Produces("application/json")
+@Controller
+public class SignUpController extends BaseController {
     private AuthService authService;
     private ObjectMapper objectMapper;
 
-    @Operation(summary = "Gets all users", tags = "auth")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Found the users",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    schema = @Schema(implementation = AuthResponse.class))
-                    })
+    @POST
+    @ApiOperation(value = "registration", nickname = "registration route", tags = "auth")
+    @ApiImplicitParams({ //
+         //   @ApiImplicitParam(required = true, dataType="string", name="auth", paramType = "header"), //
+            @ApiImplicitParam(required = true, dataType = "matcha.dto.SignUpRequest", paramType = "body") //
     })
-    @Parameter(schema = @Schema(implementation = SignUpRequest.class))
+    @ApiResponses(value = { //
+            @ApiResponse(code = 200, message = "Success", response = AuthResponse.class), //
+    })
     @Override
-    protected Object execute(Request request, Response response) throws Exception {
+    public Object handle(@ApiParam(hidden = true) Request request, @ApiParam(hidden = true) Response response) throws Exception {
+        return handleWrapper(request,response);
+    }
+
+    @Override
+    protected Object execute(Request request, Response response) throws Exception{
         return authService.signUp(objectMapper.readValue(request.body(), SignUpRequest.class), request.session());
     }
 

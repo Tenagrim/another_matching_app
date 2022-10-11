@@ -5,6 +5,7 @@ import matcha.dto.SignInRequest;
 import matcha.dto.SignUpRequest;
 import matcha.dto.entity.User;
 import matcha.dto.entity.UserAuth;
+import matcha.exceptions.AppException;
 import matcha.exceptions.UserNotFoundException;
 import matcha.repository.UserAutnRepository;
 import matcha.repository.UserRepository;
@@ -31,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
         User newUser = mapFromRequest(request);
         UserAuth auth = saveUserAuth(newUser); // TODO make a transaction
         newUser.setUserAuthId(auth.getId());
-        Long userId = (Long)userRepository.saveAndReturnKey(newUser);
+        Integer userId = (Integer)userRepository.saveAndReturnKey(newUser);
         newUser.setId(userId);
 
         session.attribute("user",newUser);
@@ -41,15 +42,23 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse signIn(SignInRequest request, Session session) {
         User user = userRepository.getByField("email", request.getEmail()).orElseThrow(UserNotFoundException::new);
-        UserAuth auth = new UserAuth(user.getUserAuthId(), UUID.randomUUID().toString(), new Date());
-        userAutnRepository.update(auth);
-        return new AuthResponse(auth.getToken());
+        if (passwordEncoder.matches(request.getPassword(), user.getPassword())){
+            UserAuth auth = new UserAuth(user.getUserAuthId(), UUID.randomUUID().toString(), new Date());
+            userAutnRepository.update(auth);
+            return new AuthResponse(auth.getToken());
+        }
+        else {
+            throw new AppException(401);
+        }
+
+
+
     }
 
     private UserAuth saveUserAuth(User user){
         String token = UUID.randomUUID().toString();
         UserAuth auth = new UserAuth(token);
-        Long userAuthId = (Long)userAutnRepository.saveAndReturnKey(auth);
+        Integer userAuthId = (Integer)userAutnRepository.saveAndReturnKey(auth);
         user.setUserAuth(auth);
         auth.setId(userAuthId);
         return auth;
