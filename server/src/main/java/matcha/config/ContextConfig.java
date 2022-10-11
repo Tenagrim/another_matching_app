@@ -1,11 +1,6 @@
 package matcha.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.servers.Server;
-import org.springdoc.core.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -30,10 +25,13 @@ public class ContextConfig {
     @Value("${app.datasource.driverclassname}")
     public String driverClassName;
 
-    @Value("${server.host}")
+    @Value("${api.server.host}")
     public String serverHost;
-    @Value("${server.port}")
+    @Value("${api.server.port}")
     public String serverPort;
+
+    @Value("${api.basepackage}")
+    public String basePackage;
 
     @Bean
     public DataSource dataSource(){
@@ -53,26 +51,6 @@ public class ContextConfig {
     @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
-    }
-
-    @Bean
-    public GroupedOpenApi publicUserApi() {
-        return GroupedOpenApi.builder()
-                .group("Users")
-                .pathsToMatch("/users/**")
-                .build();
-    }
-
-    @Bean
-    public OpenAPI customOpenApi(@Value("${application-description}")String appDescription,
-                                 @Value("${application-version}")String appVersion) {
-        return new OpenAPI().info(new Info().title("Application API")
-                        .version(appVersion)
-                        .description(appDescription)
-                        .contact(new Contact().name("username")
-                                .email("test@gmail.com")))
-                .servers(List.of(new Server().url("http://localhost:8080")
-                                .description("Dev service")));
     }
 
     @Bean

@@ -17,7 +17,7 @@ import java.util.Date;
 public class UserAuth extends Entity {
     @Id
     @Column(name = "user_auth_id")
-    Long id;
+    Integer id;
     String token;
     Date date;
 

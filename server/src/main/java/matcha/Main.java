@@ -1,7 +1,12 @@
 package matcha;
 
 import com.google.gson.Gson;
+import io.swagger.annotations.Contact;
+import io.swagger.annotations.Info;
+import io.swagger.annotations.SwaggerDefinition;
+import io.swagger.annotations.Tag;
 import matcha.config.ContextConfig;
+import matcha.constants.Const;
 import matcha.controller.AuthController;
 import matcha.controller.SignInController;
 import matcha.controller.SignUpController;
@@ -15,6 +20,14 @@ import spark.debug.DebugScreen;
 import static spark.Spark.*;
 
 @Slf4j
+@SwaggerDefinition(host = "localhost:8080", //
+        info = @Info(description = "matcha API", //
+                version = "V1.0", //
+                title = "api for matcha") , //
+        schemes = { SwaggerDefinition.Scheme.HTTP}, //
+        consumes = { "application/json" }, //
+        produces = { "application/json" } //
+        )
 public class Main {
 
     private static final ApplicationContext springContext;
@@ -45,23 +58,35 @@ public class Main {
         user = new User();
         Gson gson = new Gson();
 
+        try {
 //      Routes
-        before("/*", (q, a) -> log.info("New request"));
+            // Quite unsafe! TODO Replace this or make conditional debug only
+            before(new CorsFilter());
+            new OptionsController();
 
-        get(Path.HOME, AuthController::serveHomePage, gson::toJson);
+            // Scan classes with @Api annotation and add as routes
+            RouteBuilder.setupRoutes((String) Const.get("basePackage"), springContext);
 
-        path(Path.API, () -> {
-            post(Path.Web.AUTH, AuthController::handleAuth, gson::toJson);
-            path(Path.Web.SIGN, () -> {
-                get(Path.Web.SIGN_IN, AuthController::serveSignIn, gson::toJson);
-                get(Path.Web.SIGN_UP, AuthController::serveSignUp, gson::toJson);
-                get(Path.Web.SIGN_OUT, AuthController::handleSignOut, gson::toJson);
-                post(Path.Web.SIGN_IN, JSON_MIME_TYPE, springContext.getBean(SignInController.class), gson::toJson);
-                post(Path.Web.SIGN_UP, JSON_MIME_TYPE, springContext.getBean(SignUpController.class), gson::toJson);
-            });
-        });
+        } catch (Exception e) {
+        System.err.println(e);
+        e.printStackTrace();
+    }
 
-        after((request, response) -> response.type(JSON_MIME_TYPE));
+
+//        get(Path.HOME, AuthController::serveHomePage, gson::toJson);
+//
+//        path(Path.API, () -> {
+//            post(Path.Web.AUTH, AuthController::handleAuth, gson::toJson);
+//            path(Path.Web.SIGN, () -> {
+//                get(Path.Web.SIGN_IN, AuthController::serveSignIn, gson::toJson);
+//                get(Path.Web.SIGN_UP, AuthController::serveSignUp, gson::toJson);
+//                get(Path.Web.SIGN_OUT, AuthController::handleSignOut, gson::toJson);
+//                post(Path.Web.SIGN_IN, JSON_MIME_TYPE, springContext.getBean(SignInController.class), gson::toJson);
+//                post(Path.Web.SIGN_UP, JSON_MIME_TYPE, springContext.getBean(SignUpController.class), gson::toJson);
+//            });
+//        });
+//
+//        after((request, response) -> response.type(JSON_MIME_TYPE));
     }
 
 
